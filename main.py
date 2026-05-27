@@ -33,4 +33,4 @@ async def get_token():
 
     except Exception as e:
         logging.error(f"Error: {str(e)}")
-        return {"error": str(e)}
+        return {"error": str(e), "type": type(e).__name__}
