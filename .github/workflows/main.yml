@@ -1,0 +1,27 @@
+name: SFDA Drug Updates
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Get Token and Send Email
+        run: |
+          TOKEN_RESPONSE=$(curl -s -X POST \
+            "https://apis.sfda.gov.sa:9002/v2/oauth/accesstoken?grant_type=client_credentials" \
+            -u "${{ secrets.SFDA_CLIENT_ID }}:${{ secrets.SFDA_CLIENT_SECRET }}" \
+            -H "Content-Type: application/x-www-form-urlencoded")
+          
+          echo "Token Response: $TOKEN_RESPONSE"
+          
+          ACCESS_TOKEN=$(echo $TOKEN_RESPONSE | python3 -c "
+          import sys, json
+          data = json.load(sys.stdin)
+          print(data.get('access_token', ''))
+          ")
+          
+          echo "Token received successfully"
